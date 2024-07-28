@@ -1,0 +1,67 @@
+security:
+    password_hashers:
+        App\Entity\UsuarioAvaliador:
+            algorithm: auto
+        App\Entity\UsuarioAdministrador:
+            algorithm: auto
+
+    providers:
+        app_user_avaliador_provider:
+            entity:
+                class: App\Entity\UsuarioAvaliador
+                property: username
+
+        app_user_adm_provider:
+            entity:
+                class: App\Entity\UsuarioAdministrador
+                property: email
+
+        all_users:
+            chain:
+                providers: [
+                    app_user_avaliador_provider, 
+                    app_user_adm_provider
+                ]
+
+    firewalls:
+        admin_login:
+            pattern: ^/adm/login
+            stateless: true
+            json_login:
+                check_path: /adm/login
+                success_handler: lexik_jwt_authentication.handler.authentication_success
+                failure_handler: lexik_jwt_authentication.handler.authentication_failure
+            provider: app_user_adm_provider
+
+        avaliador_login:
+            pattern: ^/avaliador/login
+            stateless: true
+            json_login:
+                check_path: /avaliador/login
+                success_handler: lexik_jwt_authentication.handler.authentication_success
+                failure_handler: lexik_jwt_authentication.handler.authentication_failure
+            provider: app_user_avaliador_provider
+
+        # api:
+        #     pattern: ^/api
+        #     stateless: true
+        #     jwt:
+        #         authenticator: lexik_jwt_authentication.security.jwt_authenticator
+
+        dev:
+            pattern: ^/(_(profiler|wdt)|css|images|js)/
+            security: false
+
+        main:
+            lazy: true
+            provider: all_users
+            stateless: true
+            jwt:
+                authenticator: lexik_jwt_authentication.security.jwt_authenticator
+
+    access_control:
+        - { path: ^/adm/registrar, roles: PUBLIC_ACCESS }
+        - { path: ^/avaliador/registrar, roles: PUBLIC_ACCESS }
+        - { path: ^/avaliador, roles: ROLE_AVALIADOR }
+        - { path: ^/administrador, roles: ROLE_ADMINISTRADOR }
+        # - { path: ^/api, roles: IS_AUTHENTICATED_FULLY }

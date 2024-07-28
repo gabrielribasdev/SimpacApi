@@ -1,0 +1,11 @@
+controllers:
+    resource:
+        path: ../src/Controller/
+        namespace: App\Controller
+    type: attribute
+
+adm_login:
+    path: /adm/login
+
+avaliador_login:
+    path: /avaliador/login
