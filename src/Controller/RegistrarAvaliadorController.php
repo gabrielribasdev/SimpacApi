@@ -14,6 +14,7 @@ use Doctrine\Persistence\ManagerRegistry;
 #[Route('/administrador/avaliador', name: 'avaliador')]
 class RegistrarAvaliadorController extends AbstractController
 {
+    
     private $emailService;
 
     public function __construct(EmailService $emailService)
@@ -24,6 +25,7 @@ class RegistrarAvaliadorController extends AbstractController
     #[Route('/registrar', name: 'registrar_avaliador', methods: ['POST'])]
     public function registrarAvaliador(Request $request, UserPasswordHasherInterface $passwordHasher, ManagerRegistry $doctrine): JsonResponse
     {
+        set_time_limit(0);
         $em = $doctrine->getManager();
         $decoded = json_decode($request->getContent(), true);
         $username = $decoded['username']; 
@@ -31,14 +33,14 @@ class RegistrarAvaliadorController extends AbstractController
         $role = $decoded['role']; 
         $nome = $decoded['nome']; 
         $telefone = $decoded['telefone']; 
-        $cidade = $decoded['cidade']; 
+        $areaAtuacao = $decoded['areaAtuacao']; 
 
         $user = new UsuarioAvaliador();
         $user->setUsername($username); 
         $user->setRoles([$role]);
         $user->setNome($nome);
         $user->setTelefone($telefone);
-        $user->setCidade($cidade);
+        $user->setAreaAtuacao($areaAtuacao);
         $hashedPassword = $passwordHasher->hashPassword(
             $user,
             $password

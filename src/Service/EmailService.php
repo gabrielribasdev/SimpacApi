@@ -17,7 +17,7 @@ class EmailService
     public function sendUserCredentials($toEmail, $username, $password, $nome)
     {
         $email = (new Email())
-        ->from('Simpac <leirbagpena@gmail.com>')
+        ->from('Simpac <gabrielribaspdev@gmail.com>')
             ->to($toEmail) 
             ->subject('Suas credenciais de conta')
             ->text("

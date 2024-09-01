@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\UsuarioAvaliadorRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -38,7 +40,25 @@ class UsuarioAvaliador implements UserInterface, PasswordAuthenticatedUserInterf
     private ?string $nome = null;
 
     #[ORM\Column(length: 30, nullable: true)]
-    private ?string $cidade = null;
+    private ?string $areaAtuacao = null;
+
+    /**
+     * @var Collection<int, Trabalhos>
+     */
+    #[ORM\ManyToMany(targetEntity: Trabalhos::class, mappedBy: 'avaliadores')]
+    private Collection $trabalhos;
+
+    /**
+     * @var Collection<int, Avaliacoes>
+     */
+    #[ORM\OneToMany(targetEntity: Avaliacoes::class, mappedBy: 'avaliador')]
+    private Collection $avaliacoes;
+
+    public function __construct()
+    {
+        $this->trabalhos = new ArrayCollection();
+        $this->avaliacoes = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -139,14 +159,71 @@ class UsuarioAvaliador implements UserInterface, PasswordAuthenticatedUserInterf
         return $this;
     }
 
-    public function getCidade(): ?string
+    public function getAreaAtuacao(): ?string
     {
-        return $this->cidade;
+        return $this->areaAtuacao;
     }
 
-    public function setCidade(?string $cidade): static
+    public function setAreaAtuacao(?string $areaAtuacao): static
     {
-        $this->cidade = $cidade;
+        $this->areaAtuacao = $areaAtuacao;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Trabalhos>
+     */
+    public function getTrabalhos(): Collection
+    {
+        return $this->trabalhos;
+    }
+
+    public function addTrabalho(Trabalhos $trabalho): static
+    {
+        if (!$this->trabalhos->contains($trabalho)) {
+            $this->trabalhos->add($trabalho);
+            $trabalho->addAvaliadore($this);
+        }
+
+        return $this;
+    }
+
+    public function removeTrabalho(Trabalhos $trabalho): static
+    {
+        if ($this->trabalhos->removeElement($trabalho)) {
+            $trabalho->removeAvaliadore($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Avaliacoes>
+     */
+    public function getAvaliacoes(): Collection
+    {
+        return $this->avaliacoes;
+    }
+
+    public function addAvaliaco(Avaliacoes $avaliaco): static
+    {
+        if (!$this->avaliacoes->contains($avaliaco)) {
+            $this->avaliacoes->add($avaliaco);
+            $avaliaco->setAvaliador($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAvaliaco(Avaliacoes $avaliaco): static
+    {
+        if ($this->avaliacoes->removeElement($avaliaco)) {
+            // set the owning side to null (unless already changed)
+            if ($avaliaco->getAvaliador() === $this) {
+                $avaliaco->setAvaliador(null);
+            }
+        }
 
         return $this;
     }

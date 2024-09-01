@@ -42,11 +42,6 @@ security:
                 failure_handler: lexik_jwt_authentication.handler.authentication_failure
             provider: app_user_avaliador_provider
 
-        # api:
-        #     pattern: ^/api
-        #     stateless: true
-        #     jwt:
-        #         authenticator: lexik_jwt_authentication.security.jwt_authenticator
 
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
